@@ -52,18 +52,26 @@ app.use('/api/', limiter);
 const allowedOrigins = [
   process.env.CLIENT_URL || 'http://localhost:3000',
   'http://localhost:3000',
-  'https://clouddev.vercel.app',
 ];
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    // allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    const isVercel = origin.endsWith('.vercel.app');
+    const isAllowed = allowedOrigins.includes(origin);
+
+    if (isAllowed || isVercel) {
       callback(null, true);
     } else {
+      console.warn(`CORS blocked for origin: ${origin}`);
       callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
 }));
 
 // Body parsing
@@ -92,6 +100,11 @@ app.use('/api/rooms', roomRoutes);
 app.use('/api/files', fileRoutes);
 app.use('/api/chats', chatRoutes);
 app.use('/api/whiteboards', whiteboardRoutes);
+
+// Root route
+app.get('/', (req, res) => {
+  res.json({ status: 'active', message: 'CloudDev API is running' });
+});
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -153,4 +166,5 @@ async function startServer() {
 
 startServer();
 
-export { io };
+export { io, app };
+export default app;
