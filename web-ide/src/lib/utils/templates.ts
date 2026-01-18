@@ -24,6 +24,23 @@ const consolePatchContent = `(function() {
   console.info = function(...args) { originalInfo.apply(console, args); proxy('info', args); };
   
   window.addEventListener('error', (e) => proxy('error', [e.message]));
+
+  // Watch for title changes to sync with preview tab
+  if (typeof document !== 'undefined') {
+    const syncTitle = () => {
+      window.parent.postMessage({ type: 'title-change', title: document.title }, '*');
+    };
+
+    // Watch for title tag changes
+    const titleTag = document.querySelector('title');
+    if (titleTag) {
+      const observer = new MutationObserver(syncTitle);
+      observer.observe(titleTag, { childList: true, characterData: true, subtree: true });
+    }
+    
+    // Initial sync
+    syncTitle();
+  }
 })();`;
 
 export const templates = {
@@ -81,7 +98,7 @@ export default defineConfig({
     <meta charset="UTF-8" />
     <script src="/__clouddev_logger.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>React App</title>
+    <title>CloudDev Project</title>
   </head>
   <body>
     <div id="root"></div>
@@ -250,7 +267,7 @@ server.listen(3000, () => {
     <meta charset="UTF-8" />
     <script src="/__clouddev_logger.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vanilla JS</title>
+    <title>CloudDev Project</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>

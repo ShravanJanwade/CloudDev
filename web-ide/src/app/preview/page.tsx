@@ -2,7 +2,7 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Loader2, ExternalLink } from 'lucide-react';
 
 import { Suspense } from 'react';
@@ -12,10 +12,44 @@ function PreviewContent() {
   const url = searchParams.get('url');
   const [isLoading, setIsLoading] = useState(true);
 
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
   useEffect(() => {
-    if (url) {
-      document.title = 'App Preview | CloudDev';
-    }
+    if (!url) return;
+
+    // Set a default initial title
+    document.title = 'Preview | CloudDev';
+
+    // Try to sync the title from the iframe content
+    const syncTitle = () => {
+      try {
+        if (iframeRef.current?.contentDocument?.title) {
+          const newTitle = iframeRef.current.contentDocument.title;
+          if (document.title !== newTitle) {
+            document.title = newTitle;
+          }
+        }
+      } catch (err) {
+        // Cross-origin error - cannot read title directly
+        // Fallback or ignore
+      }
+    };
+
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'title-change' && event.data.title) {
+        if (document.title !== event.data.title) {
+          document.title = event.data.title;
+        }
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+
+    const interval = setInterval(syncTitle, 2000); // Slower fallback
+    return () => {
+      window.removeEventListener('message', handleMessage);
+      clearInterval(interval);
+    };
   }, [url]);
 
   useEffect(() => {
@@ -46,6 +80,7 @@ function PreviewContent() {
         </div>
       )}
       <iframe
+        ref={iframeRef}
         src={url}
         className="w-full h-full border-0"
         title="App Preview"
