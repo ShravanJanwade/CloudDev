@@ -7,251 +7,192 @@
 
 A professional, production-ready collaborative development environment that runs entirely in your browser. Built with WebContainers technology, it provides a full VS Code experience with real-time collaboration, integrated chat, whiteboard, and more.
 
+## 🌟 Why CloudDev?
+
+Traditional cloud IDEs (like Gitpod or Codespaces) rely on expensive server-side containers (Docker). CloudDev takes a different approach using **WebContainers**, a technology developed by StackBlitz that allows Node.js to run entirely inside the browser using WebAssembly.
+
+- **✅ Zero Server Cost**: Application logic runs on the client.
+- **✅ Instant Startup**: No waiting for containers to spin up.
+- **✅ Secure**: Code executes in a browser sandbox.
+- **✅ Offline Capable**: Works even with unstable connections after initial load.
+
+## 🏗️ High-Level Architecture
+
+```text
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              FRONTEND (Vercel)                              │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐ │
+│  │   Monaco    │  │  File Tree  │  │  xterm.js   │  │   Preview Frame     │ │
+│  │   Editor    │  │  Explorer   │  │  Terminal   │  │   (Live Server)     │ │
+│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────────────┘ │
+│                                    │                                         │
+│                    ┌───────────────┴───────────────┐                        │
+│                    │      WebContainer API         │                        │
+│                    │   (Runs Node.js in Browser)   │                        │
+│                    └───────────────────────────────┘                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                     │
+                                     │ Auth, Storage, Sharing
+                                     ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              BACKEND (Render)                               │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐ │
+│  │   Auth      │  │  Project    │  │  GitHub     │  │   Collaboration     │ │
+│  │   Service   │  │  Storage    │  │  Integration│  │   (WebSocket)       │ │
+│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────────────┘ │
+│                                    │                                         │
+│                    ┌───────────────┴───────────────┐                        │
+│                    │      PostgreSQL (Neon)        │                        │
+│                    │      + Redis (Upstash)        │                        │
+│                    └───────────────────────────────┘                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+
 ## ✨ Features
 
-### Core IDE Features
-- **🎨 Monaco Editor** - Full VS Code editing experience with IntelliSense, syntax highlighting, and multi-cursor support
-- **📁 File Explorer** - Intuitive file tree with create, delete,  rename, and context menus
-- **💻 Integrated Terminal** - Full shell access, run any CLI tools (npm, node, git) directly in browser
-- **👁️ Live Preview** - See changes instantly with hot module reload
-- **🎯 Multiple Templates** - Quick start with React, Node.js, or Vanilla JS projects
+### Core Capabilities
+- **🎨 Monaco Editor**: Full VS Code experience with IntelliSense, syntax highlighting, and themes.
+- **💻 Integrated Terminal**: Real `zsh` shell running in the browser using `xterm.js`.
+- **📁 File System**: complete file creation, deletion, renaming, and drag-and-drop support.
+- **�️ Live Preview**: Instant hot-reloading of your web applications.
 
-### Collaboration Features
-- **👥 Real-Time Collaboration** - Multiple users can edit code simultaneously
-- **🎨 Live Cursors** - See where other developers are working in real-time
-- **💬 Integrated Chat** - Discuss code without leaving the editor
-- **🎨 Collaborative Whiteboard** - Draw diagrams and explain concepts visually
-- **📡 Presence Indicators** - See who's online and what they're working on
+### 🤝 Real-Time Collaboration
+- **Live Cursors**: See exactly where your teammates are editing.
+- **Room-based Workflow**: Create rooms and share codes to invite others.
+- **Whiteboard**: Built-in Excalidraw-like whiteboard for architecture discussions.
+- **Chat**: Persistent chat history for team communication.
 
-### Additional Features
-- **🔗 GitHub Integration** - Import repositories directly from GitHub
-- **⚡ Lightning Fast** - WebContainer technology means no server spin-up delays
-- **🎨 Premium UI** - Beautiful, modern interface with glassmorphism and smooth animations
-- **🔒 Secure** - Code runs in sandboxed browser environment
-- **📱 Responsive** - Works on desktop, tablet, and mobile devices
+### ⚡ Powered by WebContainers
+- **Full Node.js Runtime**: Run `npm install`, `npm run dev`, and other commands directly.
+- **In-Browser Server**: The "server" runs inside the service worker, allowing valid `localhost` URLs.
 
-## 🚀 Quick Start
+## 📦 Tech Stack
+
+| Layer | Technology | Why This Choice |
+|-------|------------|-----------------|
+| **Frontend** | Next.js 14 + React | App Directory, Server Actions, Best-in-class DX |
+| **Styling** | Tailwind CSS + Shadcn/UI | Professional, accessible, and themeable UI components |
+| **Editor** | Monaco Editor | The industry standard (powers VS Code) |
+| **Runtime** | WebContainers | Run Node.js securely in the browser via WASM |
+| **Terminal** | xterm.js | Full-featured terminal emulator |
+| **Backend** | Node.js + Express | Robust handling of WebSocket connections |
+| **Realtime** | Socket.IO | Reliable event-based communication for collaboration |
+| **State** | Zustand | Lightweight, performant global state management |
+| **Database** | MongoDB / PostgreSQL | Persistent storage for user profiles and projects |
+
+## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 18+ installed
-- npm or yarn package manager
+- Node.js 18+
+- npm or yarn
 
-### Frontend Setup
-
+### 1. Clone Capabilities
 ```bash
-# Navigate to frontend directory
+git clone https://github.com/your-username/clouddev.git
+cd clouddev
+```
+
+### 2. Frontend Setup
+The frontend contains the IDE logic and WebContainer integration.
+```bash
 cd web-ide
-
-# Install dependencies
 npm install
-
-# Start development server
 npm run dev
+# Runs on http://localhost:3000
 ```
 
-The frontend will be available at `http://localhost:3000`
-
-### Backend Setup (For Collaboration Features)
-
+### 3. Backend Setup
+The backend handles authentication and real-time socket coordination.
 ```bash
-# Navigate to backend directory
 cd server
-
-# Install dependencies
 npm install
-
-# Create environment file
-cp .env.example .env
-
-# Start development server
 npm run dev
+# Runs on http://localhost:3001
 ```
 
-The backend server will be available at `http://localhost:3001`
+### 4. Environment Variables
 
-### Environment Variables
-
-**Frontend (`web-ide/.env.local`):**
+**Frontend (`web-ide/.env.local`)**
 ```env
 NEXT_PUBLIC_SOCKET_URL=http://localhost:3001
 ```
 
-**Backend (`server/.env`):**
+**Backend (`server/.env`)**
 ```env
 PORT=3001
 CLIENT_URL=http://localhost:3000
-NODE_ENV=development
+MONGODB_URI=mongodb://localhost:27017/clouddev
+# Optional: GitHub OAuth credentials
+GITHUB_CLIENT_ID=...
+GITHUB_CLIENT_SECRET=...
 ```
 
-## 📦 Tech Stack
+## 📂 Project Structure
 
-### Frontend
-- **Next.js 16** - React framework with App Router
-- **TypeScript** - Type-safe development
-- **Tailwind CSS** - Utility-first CSS framework
-- **Framer Motion** - Smooth animations
-- **@monaco-editor/react** - VS Code editor component
-- **@webcontainer/api** - Run Node.js in the browser
-- **Socket.io Client** - Real-time communication
-- **Yjs** - CRDT for collaborative editing
-- **Zustand** - State management
-- **xterm.js** - Terminal emulator
-
-### Backend
-- **Express.js** - Web server framework
-- **Socket.io** - WebSocket server for real-time features
-- **Yjs** - Operational transformation for collaboration
-- **TypeScript** - Type-safe backend development
-
-## 🏗️ Project Structure
-
+### Frontend (`/web-ide`)
 ```
-CloudDev/
-├── web-ide/                    # Frontend Next.js application
-│   ├── src/
-│   │   ├── app/                # Next.js app router pages
-│   │   ├── components/
-│   │   │   ├── ide/            # IDE components (Editor, Terminal, Preview)
-│   │   │   ├── collaboration/  # Collaboration components (Chat, Whiteboard)
-│   │   │   └── ui/             # Reusable UI components
-│   │   ├── hooks/              # Custom React hooks
-│   │   ├── stores/             # Zustand state stores
-│   │   └── lib/                # Utilities and helpers
-│   └── package.json
-│
-├── server/                     # Backend Node.js server
-│   ├── src/
-│   │   ├── socket/             # Socket.io event handlers
-│   │   │   ├── rooms.ts        # Room management
-│   │   │   └── collaboration.ts # Chat, whiteboard handlers
-│   │   └── index.ts            # Express server setup
-│   └── package.json
-│
-└── README.md
+src/
+├── app/                  # Next.js App Router pages
+├── components/
+│   ├── ide/             # Core IDE components
+│   │   ├── Editor/      # Monaco wrapper
+│   │   ├── Terminal/    # xterm.js integration
+│   │   ├── FileTree/    # File explorer
+│   │   └── Preview/     # Live preview iframe
+│   ├── collaboration/   # Chat, Whiteboard, Cursor tracking
+│   └── ui/              # Shared Shadcn UI components
+├── lib/
+│   ├── webcontainer/    # Singleton instance & filesystem helpers
+│   └── api/             # API client for backend
+└── stores/              # Zustand stores (editor, files, auth)
 ```
 
-## 🎯 Usage
-
-### Creating a New Project
-
-1. Visit the homepage
-2. Click on a template (React, Node.js, or Vanilla JS)
-3. Start coding instantly!
-
-### Importing from GitHub
-
-1. Enter a GitHub repository URL on the homepage
-2. Click "Launch"
-3. The repository will be cloned and ready to edit
-
-### Collaborating with Others
-
-1. Click "Start Collaborating" on the homepage
-2. Share the room URL with teammates
-3. Code together in real-time!
-
-## 🚢 Deployment
-
-### Deploy Frontend to Vercel
-
-```bash
-cd web-ide
-vercel
+### Backend (`/server`)
+```
+src/
+├── socket/              # Socket.IO handlers
+│   ├── rooms.ts         # Room logic, joining/leaving
+│   └── collaboration.ts # Cursor typing, whiteboard events
+├── models/              # Mongoose schemas (User, Room)
+├── routes/              # Express API routes
+└── middleware/          # Auth & validation
 ```
 
-### Deploy Backend to Railway
+## 💾 Database Schema
 
-1. Create a new project on [Railway](https://railway.app)
-2. Connect your GitHub repository
-3. Set environment variables:
-   - `CLIENT_URL`: Your Vercel frontend URL
-   - `NODE_ENV`: production
-4. Deploy!
+The project uses a structured schema to manage users and collaborative sessions.
 
-### Environment Variables for Production
+**Users**
+- `id`: Unique identifier
+- `name`: Display name
+- `email`: User email (for auth)
+- `avatar`: Profile picture URL
 
-**Frontend:**
-```env
-NEXT_PUBLIC_SOCKET_URL=https://your-backend-url.railway.app
-```
+**Rooms**
+- `code`: 6-character unique join code
+- `host`: Reference to User who created it
+- `participants`: List of active users
+- `isActive`: Boolean flag for open rooms
 
-**Backend:**
-```env
-CLIENT_URL=https://your-frontend-url.vercel.app
-NODE_ENV=production
-```
+## 🛠️ Core Implementation Concepts
 
-## 🎨 Features Showcase
+### The WebContainer Singleton
+To ensure performance, we maintain a single instance of the WebContainer boot process. This prevents multiple boot attempts and manages the virtual file system lifecycle. See `src/lib/webcontainer/instance.ts`.
 
-### Premium Landing Page
-- Animated gradients and glassmorphism effects
-- Smooth Framer Motion animations
-- Responsive design for all devices
+### File System Synchronization
+We use specific hooks (`useFileSystem`) to bridge the React UI with the WebContainer FS. When you create a file in the UI, it writes to the persistent virtual filesystem, which triggers the 'file-change' events that update the internal Node.js server.
 
-### Professional IDE Interface
-- VS Code-inspired layout
-- Resizable panels
-- Dark theme optimized for long coding sessions
-
-### Real-Time Collaboration
-- See live cursors with participant names
-- Synchronized code editing
-- Integrated chat for team communication
-- Collaborative whiteboard for visual explanations
-
-## 🛠️ Development
-
-### Adding New Templates
-
-Edit `src/lib/utils/templates.ts` to add new project templates.
-
-### Customizing Themes
-
-Modify `tailwind.config.ts` for color schemes and design tokens.
-
-### Extending Collaboration Features
-
-Add new socket event handlers in `server/src/socket/collaboration.ts`.
-
-## 📝 API Documentation
-
-### WebSocket Events
-
-**Room Management:**
-- `room:join` - Join a collaboration room
-- `room:leave` - Leave a room
-- `room:participants` - Get list of participants
-- `room:participant-joined` - Participant joined notification
-- `room:participant-left` - Participant left notification
-
-**Collaboration:**
-- `chat:message` - Send chat message
-- `chat:history` - Get chat history
-- `cursor:update` - Update cursor position
-- `whiteboard:draw` - Draw on whiteboard
-- `whiteboard:clear` - Clear whiteboard
+### Real-Time Sync Strategy
+- **Code Changes**: We broadcast operational changes rather than full file replacement to avoid overwriting remote work.
+- **Cursors**: Throttled events (every ~50ms) send X/Y coordinates to minimize network traffic while maintaining smoothness.
+- **Whiteboard**: Uses a command-based approach (draw-stroke, clear) to replay history for new joiners.
 
 ## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please read the contribution guidelines before submitting a pull request.
 
 ## 📄 License
-
-MIT License - feel free to use this project for your portfolio or commercial applications.
-
-## 👨‍💻 Author
-
-**Shravankumar Janawade**
-
-Built with ❤️ using WebContainers, Next.js, and Socket.io
-
-## 🙏 Acknowledgments
-
-- [WebContainers](https://webcontainers.io/) by StackBlitz for amazing in-browser Node.js runtime
-- [Monaco Editor](https://microsoft.github.io/monaco-editor/) by Microsoft for VS Code editor component
-- [Socket.io](https://socket.io/) for reliable real-time communication
-- [Yjs](https://yjs.dev/) for conflict-free collaborative editing
+MIT License. Free for personal and commercial use.
 
 ---
-
-⭐ If you find this project useful, please consider giving it a star on GitHub!
+**Built with ❤️ by Shravankumar Janawade**
