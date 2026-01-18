@@ -1,4 +1,4 @@
-import { Router, Response } from 'express';
+import { Router, Request, Response } from 'express';
 import { z } from 'zod';
 import { Room, generateRoomCode } from '../models/Room';
 import { authMiddleware, AuthRequest } from '../middleware/auth';
@@ -106,7 +106,7 @@ router.post('/join/:code', authMiddleware, async (req: AuthRequest, res: Respons
 });
 
 // Guest join room by code (no authentication required)
-router.post('/join-guest/:code', async (req, res) => {
+router.post('/join-guest/:code', async (req: Request, res: Response) => {
   try {
     const { guestName } = req.body;
     
@@ -158,7 +158,7 @@ router.post('/join-guest/:code', async (req, res) => {
 });
 
 // Get room by code
-router.get('/:code', async (req, res) => {
+router.get('/:code', async (req: Request, res: Response) => {
   try {
     const room = await Room.findOne({ 
       code: { $regex: new RegExp(`^${req.params.code}$`, 'i') },

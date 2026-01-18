@@ -102,12 +102,12 @@ app.use('/api/chats', chatRoutes);
 app.use('/api/whiteboards', whiteboardRoutes);
 
 // Root route
-app.get('/', (req, res) => {
+app.get('/', (req: express.Request, res: express.Response) => {
   res.json({ status: 'active', message: 'CloudDev API is running' });
 });
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get('/health', (req: express.Request, res: express.Response) => {
   res.json({ 
     status: 'ok', 
     timestamp: new Date().toISOString(),
@@ -116,7 +116,7 @@ app.get('/health', (req, res) => {
 });
 
 // API info
-app.get('/api', (req, res) => {
+app.get('/api', (req: express.Request, res: express.Response) => {
   res.json({
     name: 'CloudDev API',
     version: '1.0.0',
@@ -132,7 +132,7 @@ app.get('/api', (req, res) => {
 });
 
 // 404 handler
-app.use((req, res) => {
+app.use((req: express.Request, res: express.Response) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
