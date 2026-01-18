@@ -9,6 +9,15 @@ import { mountFiles, getWebContainer, cleanFileSystem } from '@/lib/webcontainer
 import { useFileSystem } from '@/hooks/useFileSystem';
 import { useCollaborationStore } from '@/stores/collaborationStore';
 
+function generateRandomCode(): string {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for (let i = 0; i < 6; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return code;
+}
+
 export default function EditorPage({ params }: { params: Promise<{ projectId: string }> }) {
     const searchParams = useSearchParams();
     const templateName = searchParams.get('template') as TemplateKey;
@@ -32,7 +41,7 @@ export default function EditorPage({ params }: { params: Promise<{ projectId: st
             // and redirect to its code so others can join.
             if (projectId === 'new') {
                 try {
-                    console.log('[Collab] Creating real room for "new" session...');
+                    console.log('[Collab] Creating room for "new" session...');
                     const result = await api.createRoom({ 
                         name: templateName ? `${templateName} Project` : 'Collaborative Project',
                         template: templateName
@@ -40,12 +49,17 @@ export default function EditorPage({ params }: { params: Promise<{ projectId: st
 
                     if (result.data?.room?.code) {
                         actualRoomId = result.data.room.code;
-                        // Silently update the URL so sharing works
-                        window.history.replaceState(null, '', `/editor/${actualRoomId}?room=true${templateName ? `&template=${templateName}` : ''}`);
+                    } else {
+                        // Fallback for guests or API failure
+                        actualRoomId = generateRandomCode();
                     }
+                    
+                    // Update the URL so sharing works
+                    window.history.replaceState(null, '', `/editor/${actualRoomId}?room=true${templateName ? `&template=${templateName}` : ''}`);
                 } catch (err) {
                     console.error('[Collab] Failed to create persistent room:', err);
-                    // Fallback to 'new' but it might not be shareable
+                    actualRoomId = generateRandomCode();
+                    window.history.replaceState(null, '', `/editor/${actualRoomId}?room=true${templateName ? `&template=${templateName}` : ''}`);
                 }
             }
 
