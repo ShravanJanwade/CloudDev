@@ -48,14 +48,13 @@ Traditional cloud IDEs (like Gitpod or Codespaces) rely on expensive server-side
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-
 ## ✨ Features
 
 ### Core Capabilities
 - **🎨 Monaco Editor**: Full VS Code experience with IntelliSense, syntax highlighting, and themes.
 - **💻 Integrated Terminal**: Real `zsh` shell running in the browser using `xterm.js`.
-- **📁 File System**: complete file creation, deletion, renaming, and drag-and-drop support.
-- **�️ Live Preview**: Instant hot-reloading of your web applications.
+- **📁 File System**: Complete file creation, deletion, renaming, and drag-and-drop support.
+- **👁️ Live Preview**: Instant hot-reloading of your web applications.
 
 ### 🤝 Real-Time Collaboration
 - **Live Cursors**: See exactly where your teammates are editing.
