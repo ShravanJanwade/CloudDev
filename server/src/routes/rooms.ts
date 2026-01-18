@@ -10,6 +10,7 @@ const createRoomSchema = z.object({
   name: z.string().min(1, 'Name is required').max(50),
   projectId: z.string().optional(),
   maxParticipants: z.number().min(2).max(20).optional(),
+  template: z.string().optional(),
 });
 
 // Create room
@@ -31,6 +32,7 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
       code,
       name: data.name,
       project: data.projectId,
+      template: data.template,
       host: req.userId,
       maxParticipants: data.maxParticipants || 10,
       participants: [{

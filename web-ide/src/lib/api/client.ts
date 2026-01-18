@@ -135,7 +135,7 @@ class ApiClient {
   }
 
   // Room endpoints
-  async createRoom(data: { name: string; projectId?: string; maxParticipants?: number }) {
+  async createRoom(data: { name: string; projectId?: string; maxParticipants?: number; template?: string }) {
     return this.request<{ room: any }>('/api/rooms', {
       method: 'POST',
       body: JSON.stringify(data),

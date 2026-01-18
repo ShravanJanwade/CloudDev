@@ -24,6 +24,7 @@ export interface IRoom extends Document {
   chatHistory: IChatMessage[];
   isActive: boolean;
   maxParticipants: number;
+  template?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -70,6 +71,10 @@ const roomSchema = new Schema<IRoom>(
     maxParticipants: {
       type: Number,
       default: 10,
+    },
+    template: {
+      type: String,
+      trim: true,
     },
   },
   {
